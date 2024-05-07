@@ -115,7 +115,7 @@ class Application #if lime extends LimeApplication #end
 		#if (!flash && sys)
 		// wait for the first update to dispatch invoke event
 		// to ensure that the document class constructor has completed
-		onUpdate.add(function(delta:Int):Void
+		onUpdate.add((delta:Float) ->
 		{
 			if (NativeApplication.nativeApplication.hasEventListener(InvokeEvent.INVOKE))
 			{
@@ -134,7 +134,7 @@ class Application #if lime extends LimeApplication #end
 	#if (lime >= "8.1.0")
 	@:noCompletion override private function __checkForAllWindowsClosed():Void
 	{
-		if (__windows.length > 0)
+		if (__windows.length != 0)
 		{
 			return;
 		}

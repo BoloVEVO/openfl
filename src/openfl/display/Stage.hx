@@ -868,7 +868,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 	#if (commonjs && !nodejs)
 	@:noCompletion private var __cursor:LimeMouseCursor;
 	#end
-	@:noCompletion private var __deltaTime:Int;
+	@:noCompletion private var __deltaTime:Float;
 	@:noCompletion private var __dirty:Bool;
 	@:noCompletion private var __displayMatrix:Matrix;
 	@:noCompletion private var __displayRect:Rectangle;
@@ -2288,7 +2288,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		__onTouch(TouchEvent.TOUCH_BEGIN, touch, __primaryTouch == touch);
 	}
 
-	@:noCompletion private function __onLimeUpdate(deltaTime:Int):Void
+	@:noCompletion private function __onLimeUpdate(deltaTime:Float):Void
 	{
 		__deltaTime = deltaTime;
 
@@ -2696,7 +2696,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 
 			if (type == MouseEvent.MOUSE_UP && target.doubleClickEnabled)
 			{
-				var currentTime = Lib.getTimer();
+				var currentTime = Std.int(Lib.getTimer());
 				if (currentTime - __lastClickTime < 500 && target == __lastClickTarget)
 				{
 					#if openfl_pool_events

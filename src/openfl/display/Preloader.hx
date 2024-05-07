@@ -153,7 +153,7 @@ class Preloader
 		progress.alpha = 0;
 		addChild(progress);
 
-		startAnimation = Lib.getTimer() + 100;
+		startAnimation = Std.int(Lib.getTimer()) + 100;
 		endAnimation = startAnimation + 1000;
 
 		addEventListener(Event.ADDED_TO_STAGE, this_onAddedToStage);
@@ -254,7 +254,7 @@ class Preloader
 
 	@:noCompletion private function this_onEnterFrame(event:Event):Void
 	{
-		var elapsed = Lib.getTimer() - startAnimation;
+		var elapsed = Std.int(Lib.getTimer()) - startAnimation;
 		var total = endAnimation - startAnimation;
 
 		var percent = elapsed / total;

@@ -60,7 +60,7 @@ class Timeline
 	@:noCompletion private var __lastFrameScriptEval:Int;
 	@:noCompletion private var __lastFrameUpdate:Int;
 	@:noCompletion private var __scope:MovieClip;
-	@:noCompletion private var __timeElapsed:Int;
+	@:noCompletion private var __timeElapsed:Float;
 	@:noCompletion private var __totalFrames:Int;
 
 	private function new()
@@ -184,7 +184,7 @@ class Timeline
 		attachMovieClip(movieClip);
 	}
 
-	@:noCompletion private function __enterFrame(deltaTime:Int):Void
+	@:noCompletion private function __enterFrame(deltaTime:Float):Void
 	{
 		if (__isPlaying)
 		{
@@ -207,14 +207,14 @@ class Timeline
 					__currentFrame = 1;
 				}
 
-				if (!__evaluateFrameScripts(nextFrame))
+				if (!__evaluateFrameScripts(Std.int(nextFrame)))
 				{
 					return;
 				}
 			}
 			else
 			{
-				__currentFrame = nextFrame;
+				__currentFrame = Std.int(nextFrame);
 			}
 		}
 
@@ -253,14 +253,14 @@ class Timeline
 		return true;
 	}
 
-	@:noCompletion private function __getNextFrame(deltaTime:Int):Int
+	@:noCompletion private function __getNextFrame(deltaTime:Float):Float
 	{
 		var nextFrame:Int = 0;
 
 		if (frameRate != null)
 		{
 			__timeElapsed += deltaTime;
-			nextFrame = __currentFrame + Math.floor(__timeElapsed / __frameTime);
+			nextFrame = __currentFrame + Std.int(__timeElapsed / __frameTime);
 			if (nextFrame < 1) nextFrame = 1;
 			if (nextFrame > __totalFrames) nextFrame = Math.floor((nextFrame - 1) % __totalFrames) + 1;
 			__timeElapsed = (__timeElapsed % __frameTime);

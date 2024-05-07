@@ -308,7 +308,7 @@ import lime.utils.Int16Array;
 		if (!__isValid) return 0;
 
 		#if lime
-		__audioSource.currentTime = Std.int(value) - __audioSource.offset;
+		__audioSource.currentTime = value - __audioSource.offset;
 		#end
 		return value;
 	}
@@ -387,7 +387,7 @@ import lime.utils.Int16Array;
 	#end
 
 	#if lime_openal
-	private function watchBuffers(i:Int):Void
+	private function watchBuffers(i:Float):Void
 	{
 		var alAudioContext = __sound.__alAudioContext;
 		var hasSampleData = true;
