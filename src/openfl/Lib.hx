@@ -18,6 +18,8 @@ import lime.system.System;
 import js.Browser;
 #end
 
+typedef Float32 = #if (cpp || cs || hl || java) Single #else Float #end;
+
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug
@@ -219,7 +221,7 @@ import js.Browser;
 		another SWF file is loaded later, the return value is relative to when the first
 		SWF file was loaded.
 	**/
-	public static function getTimer():Float
+	public static function getTimer():Float32
 	{
 		#if lime
 		#if flash
