@@ -1202,11 +1202,11 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 			case OPENGL, OPENGLES, WEBGL:
 				#if (!disable_cffi && (!html5 || !canvas))
 				context3D = new Context3D(this);
-				#if openfl_dpi_aware
-				context3D.configureBackBuffer(windowWidth, windowHeight, 0, true, true, true);
-				#else
+				/*#if openfl_dpi_aware
+					context3D.configureBackBuffer(windowWidth, windowHeight, 0, true, true, true);
+					#else */
 				context3D.configureBackBuffer(stageWidth, stageHeight, 0, true, true, true);
-				#end
+				// #end
 				context3D.present();
 				__renderer = new OpenGLRenderer(context3D);
 				#end
