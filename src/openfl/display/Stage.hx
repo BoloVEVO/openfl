@@ -23,6 +23,7 @@ import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.geom.Transform;
+import openfl.text.TextField;
 import openfl.ui.GameInput;
 import openfl.ui.Keyboard;
 import openfl.ui.Mouse;
@@ -58,7 +59,7 @@ typedef Element = Dynamic;
 /**
 	The Stage class represents the main drawing area.
 
-	For SWF content running in the browser(in Flash<sup>®</sup> Player),
+	For SWF content running in the browser (in Flash<sup>®</sup> Player),
 	the Stage represents the entire area where Flash content is shown. For
 	content running in AIR on desktop operating systems, each NativeWindow
 	object has a corresponding Stage object.
@@ -126,7 +127,7 @@ typedef Element = Dynamic;
 	@event fullScreen             Dispatched when the Stage object enters, or
 								  leaves, full-screen mode. A change in
 								  full-screen mode can be initiated through
-								  ActionScript, or the user invoking a keyboard
+								  Haxe code, or the user invoking a keyboard
 								  shortcut, or if the current focus leaves the
 								  full-screen window.
 	@event mouseLeave             Dispatched by the Stage object when the
@@ -195,11 +196,11 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		stage in Flash Player or the browser. The following are valid values:
 
 		The `align` property is only available to an object that is
-		in the same security sandbox as the Stage owner(the main SWF file). To
+		in the same security sandbox as the Stage owner (the main SWF file). To
 		avoid this, the Stage owner can grant permission to the domain of the
 		calling object by calling the `Security.allowDomain()` method
 		or the `Security.alowInsecureDomain()` method. For more
-		information, see the "Security" chapter in the _ActionScript 3.0
+		information, see the "Security" chapter in the _OpenFL
 		Developer's Guide_.
 	**/
 	public var align:StageAlign;
@@ -384,7 +385,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 							  `Security.allowDomain()` method or the
 							  `Security.allowInsecureDomain()` method.
 							  For more information, see the "Security" chapter in
-							  the _ActionScript 3.0 Developer's Guide_.
+							  the _OpenFL Developer's Guide_.
 							  Trying to set the `displayState` property
 							  while the settings dialog is displayed, without a
 							  user response, or if the `param` or
@@ -436,7 +437,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 							  `Security.allowDomain()` method or the
 							  `Security.allowInsecureDomain()` method.
 							  For more information, see the "Security" chapter in
-							  the _ActionScript 3.0 Developer's Guide_.
+							  the _OpenFL Developer's Guide_.
 	**/
 	public var frameRate(get, set):Float;
 
@@ -458,19 +459,19 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 	public var fullScreenHeight(get, never):UInt;
 
 	/**
-		Sets the Flash runtime to scale a specific region of the stage to
-		full-screen mode. If available, the Flash runtime scales in hardware,
+		Sets OpenFL to scale a specific region of the stage to
+		full-screen mode. If available, the OpenFL scales in hardware,
 		which uses the graphics and video card on a user's computer, and
 		generally displays content more quickly than software scaling.
 		When this property is set to a valid rectangle and the `displayState`
-		property is set to full-screen mode, the Flash runtime scales the
-		specified area. The actual Stage size in pixels within ActionScript
-		does not change. The Flash runtime enforces a minimum limit for the
+		property is set to full-screen mode, OpenFL scales the
+		specified area. The actual Stage size in pixels within Haxe
+		does not change. OpenFL enforces a minimum limit for the
 		size of the rectangle to accommodate the standard "Press Esc to exit
 		full-screen mode" message. This limit is usually around 260 by 30
-		pixels but can vary on platform and Flash runtime version.
+		pixels but can vary on platform and OpenFL version.
 
-		This property can only be set when the Flash runtime is not in
+		This property can only be set when the OpenFL is not in
 		full-screen mode. To use this property correctly, set this property
 		first, then set the `displayState` property to full-screen mode, as
 		shown in the code examples.
@@ -549,7 +550,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		In the desktop profile of Adobe AIR, `quality` can be set to
 		`StageQuality.BEST` or `StageQuality.HIGH`(and the
 		default value is `StageQuality.HIGH`). Attempting to set it to
-		another value has no effect(and the property remains unchanged). In the
+		another value has no effect (and the property remains unchanged). In the
 		moble profile of AIR, all four quality settings are available. The default
 		value on mobile devices is `StageQuality.MEDIUM`.
 
@@ -568,7 +569,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 							  method or the
 							  `Security.allowInsecureDomain()` method.
 							  For more information, see the "Security" chapter in
-							  the _ActionScript 3.0 Developer's Guide_.
+							  the _OpenFL Developer's Guide_.
 	**/
 	public var quality(get, set):StageQuality;
 
@@ -602,7 +603,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 							  `Security.allowDomain()` method or the
 							  `Security.allowInsecureDomain()` method.
 							  For more information, see the "Security" chapter in
-							  the _ActionScript 3.0 Developer's Guide_.
+							  the _OpenFL Developer's Guide_.
 	**/
 	public var scaleMode(get, set):StageScaleMode;
 
@@ -623,7 +624,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 							  `Security.allowDomain()` method or the
 							  `Security.allowInsecureDomain()` method. For
 							  more information, see the "Security" chapter in
-							  the _ActionScript 3.0 Developer's Guide_.
+							  the _OpenFL Developer's Guide_.
 	**/
 	public var showDefaultContextMenu:Bool;
 
@@ -664,13 +665,13 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		@throws SecurityError Calling the `stageFocusRect` property of
 							  a Stage object throws an exception for any caller
 							  that is not in the same security sandbox as the
-							  Stage owner(the main SWF file). To avoid this, the
+							  Stage owner (the main SWF file). To avoid this, the
 							  Stage owner can grant permission to the domain of
 							  the caller by calling the
 							  `Security.allowDomain()` method or the
 							  `Security.allowInsecureDomain()` method.
 							  For more information, see the "Security" chapter in
-							  the _ActionScript 3.0 Developer's Guide_.
+							  the _OpenFL Developer's Guide_.
 	**/
 	public var stageFocusRect:Bool;
 
@@ -698,7 +699,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 
 		**Note:** In an HTML page hosting the SWF file, both the
 		`object` and `embed` tags' `height`
-		attributes must be set to a percentage(such as `100%`), not
+		attributes must be set to a percentage (such as `100%`), not
 		pixels. If the settings are generated by JavaScript code, the
 		`height` parameter of the `AC_FL_RunContent() `
 		method must be set to a percentage, too. This percentage is applied to the
@@ -713,7 +714,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 							  `Security.allowDomain()` method or the
 							  `Security.allowInsecureDomain()` method.
 							  For more information, see the "Security" chapter in
-							  the _ActionScript 3.0 Developer's Guide_.
+							  the _OpenFL Developer's Guide_.
 	**/
 	public var stageHeight(default, null):Int;
 
@@ -770,7 +771,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 
 		**Note:** In an HTML page hosting the SWF file, both the
 		`object` and `embed` tags' `width`
-		attributes must be set to a percentage(such as `100%`), not
+		attributes must be set to a percentage (such as `100%`), not
 		pixels. If the settings are generated by JavaScript code, the
 		`width` parameter of the `AC_FL_RunContent() `
 		method must be set to a percentage, too. This percentage is applied to the
@@ -785,7 +786,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 							  `Security.allowDomain()` method or the
 							  `Security.allowInsecureDomain()` method.
 							  For more information, see the "Security" chapter in
-							  the _ActionScript 3.0 Developer's Guide_.
+							  the _OpenFL Developer's Guide_.
 	**/
 	public var stageWidth(default, null):Int;
 
@@ -794,7 +795,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 	**/
 	public var window(default, null):Window;
 
-	#if sys
+	#if (sys && (!flash_doc_gen || air_doc_gen))
 	/**
 
 	**/
@@ -846,7 +847,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		version, and set the `DisplayGPUBlendsetting` in your mm.cfg file.
 
 		**Note:** This property is always `false` when referenced from
-		ActionScript that runs before the runtime performs its first rendering
+		Haxe code that runs before the runtime performs its first rendering
 		pass. For example, if you examine `wmodeGPU` from a script in Frame 1
 		of Adobe Flash Professional, and your SWF file is the first SWF file
 		loaded in a new instance of the runtime, then the `wmodeGPU` value is
@@ -1480,11 +1481,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 	{
 		var event = new UncaughtErrorEvent(UncaughtErrorEvent.UNCAUGHT_ERROR, true, true, e);
 
-		try
-		{
-			Lib.current.__loaderInfo.uncaughtErrorEvents.dispatchEvent(event);
-		}
-		catch (e:Dynamic) {}
+		Lib.current.__loaderInfo.uncaughtErrorEvents.dispatchEvent(event);
 
 		if (!event.__preventDefault)
 		{
@@ -1765,6 +1762,32 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 						}
 
 						// TODO: handle border around focus
+					}
+				}
+				else if (type == KeyboardEvent.KEY_DOWN
+					&& focus != null
+					&& !#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end (focus, TextField))
+				{
+					var ctrlKey = (__macKeyboard ? (modifier.ctrlKey || modifier.metaKey) : modifier.ctrlKey);
+					if (ctrlKey && !modifier.altKey && !modifier.shiftKey)
+					{
+						switch (keyCode)
+						{
+							case Keyboard.C:
+								// flash docs say that bubbles and cancelable
+								// are false, but they're actually true
+								var copyEvent = new Event(Event.COPY, true, true);
+								focus.dispatchEvent(copyEvent);
+							case Keyboard.X:
+								var cutEvent = new Event(Event.CUT, true, true);
+								focus.dispatchEvent(cutEvent);
+							case Keyboard.V:
+								var pasteEvent = new Event(Event.PASTE, true, true);
+								focus.dispatchEvent(pasteEvent);
+							case Keyboard.A:
+								var selectAllEvent = new Event(Event.SELECT_ALL, true, true);
+								focus.dispatchEvent(selectAllEvent);
+						}
 					}
 				}
 
@@ -2071,7 +2094,11 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		Telemetry.__startTiming(TelemetryCommandName.RENDER);
 		#end
 
+		#if (openfl_enable_experimental_update_queue && !dom)
+		__updateQueue(false, true);
+		#else
 		__update(false, true);
+		#end
 
 		#if lime
 		if (__renderer != null)
@@ -3441,6 +3468,32 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		#end
 	}
 
+	#if (openfl_enable_experimental_update_queue && !dom)
+	@:noCompletion private function __updateQueue(transformOnly:Bool, updateChildren:Bool):Void
+	{
+		var updateFix:Array<DisplayObjectContainer> = [];
+		var updateQueue = DisplayObject.updateQueue;
+		while (updateQueue.length != 0)
+		{
+			var displayObject = updateQueue.shift();
+			var parentDisplayObject = displayObject.parent;
+			if (parentDisplayObject != null && parentDisplayObject.__updateRequired == true && parentDisplayObject != this)
+			{
+				parentDisplayObject.__update(transformOnly, false);
+				parentDisplayObject.__updateRequired = false;
+				updateFix.push(parentDisplayObject);
+			}
+
+			displayObject.__update(transformOnly, updateChildren);
+			displayObject._updateQueueFlag = false;
+		}
+
+		for (i in 0...updateFix.length)
+		{
+			updateFix[i].__updateRequired = true;
+		}
+	}
+	#else
 	@:noCompletion private override function __update(transformOnly:Bool, updateChildren:Bool):Void
 	{
 		if (transformOnly)
@@ -3495,6 +3548,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 			**/
 		}
 	}
+	#end
 
 	// Get & Set Methods
 	@:noCompletion private function get_color():Null<Int>

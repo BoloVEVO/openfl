@@ -24,6 +24,8 @@ import js.html.CanvasPattern;
 import js.html.CanvasRenderingContext2D;
 import js.html.CanvasWindingRule;
 import js.Browser;
+import js.html.DOMMatrix;
+import js.html.Path2D;
 #end
 
 @:access(openfl.display.DisplayObject)
@@ -110,7 +112,8 @@ class CanvasGraphics
 		var gradientFill:CanvasGradient = null,
 			point:Point = null,
 			point2:Point = null,
-			releaseMatrix = false;
+			releaseMatrix = false,
+			ratio:Float = 0.0;
 
 		if (matrix == null)
 		{
@@ -130,29 +133,112 @@ class CanvasGraphics
 				inversePendingMatrix = matrix.clone();
 				inversePendingMatrix.invert();
 
+				for (i in 0...colors.length)
+				{
+					ratio = ratios[i] / 0xFF;
+					if (ratio < 0) ratio = 0;
+					if (ratio > 1) ratio = 1;
+
+					gradientFill.addColorStop(ratio, getRGBA(colors[i], alphas[i]));
+				}
+
 			case LINEAR:
-				gradientFill = context.createLinearGradient(-819.2, 0, 819.2, 0);
+				var gradientScale:Float = spreadMethod == PAD ? 1.0 : 25.0;
+				var dx = 0.5 * (gradientScale - 1.0) * 1638.4;
+				var canvas:CanvasElement = cast Browser.document.createElement("canvas");
+				var context2 = canvas.getContext("2d");
 
-				pendingMatrix = matrix.clone();
-				inversePendingMatrix = matrix.clone();
+				var dimensions:Dynamic = getDimensions(matrix);
+
+				canvas.width = context.canvas.width;
+				canvas.height = context.canvas.height;
+				gradientFill = context.createLinearGradient(-819.2 - dx, 0, 819.2 + dx, 0);
+				if (spreadMethod == PAD)
+				{
+					for (i in 0...colors.length)
+					{
+						ratio = ratios[i] / 0xFF;
+						if (ratio < 0) ratio = 0;
+						if (ratio > 1) ratio = 1;
+
+						gradientFill.addColorStop(ratio, getRGBA(colors[i], alphas[i]));
+					}
+				}
+				else if (spreadMethod == REFLECT)
+				{
+					var t:Float = 0;
+					var step:Float = 1 / 25;
+					var a:Int;
+					while (t < 1)
+					{
+						for (i in 0...colors.length)
+						{
+							ratio = ratios[i] / 0xFF;
+							ratio = t + ratio * step;
+							if (ratio < 0) ratio = 0;
+							if (ratio > 1) ratio = 1;
+
+							gradientFill.addColorStop(ratio, getRGBA(colors[i], alphas[i]));
+						}
+						t += step;
+						a = colors.length - 1;
+						while (a >= 0)
+						{
+							ratio = ratios[a] / 0xFF;
+							ratio = t + (1.0 - ratio) * step;
+							if (ratio < 0) ratio = 0;
+							if (ratio > 1) ratio = 1;
+							gradientFill.addColorStop(ratio, getRGBA(colors[a], alphas[a]));
+							a--;
+						}
+						t += step;
+					}
+				}
+				else if (spreadMethod == REPEAT)
+				{
+					var t:Float = 0;
+					var step:Float = 1 / 25;
+					var a:Int;
+					while (t < 1)
+					{
+						for (i in 0...colors.length)
+						{
+							ratio = ratios[i] / 0xFF;
+							ratio = t + ratio * step;
+							if (ratio < 0) ratio = 0;
+							if (ratio > 1) ratio = 1 - 0.001;
+
+							gradientFill.addColorStop(ratio, getRGBA(colors[i], alphas[i]));
+						}
+
+						ratio = t + 0.001;
+						if (ratio < 0) ratio = 0;
+						if (ratio > 1) ratio = 1;
+						gradientFill.addColorStop(ratio - 0.001, getRGBA(colors[colors.length - 1], alphas[alphas.length - 1]));
+						gradientFill.addColorStop(ratio, getRGBA(colors[0], alphas[0]));
+
+						t += step;
+					}
+				}
+
+				pendingMatrix = new Matrix();
+				pendingMatrix.tx = matrix.tx - dimensions.width / 2;
+				pendingMatrix.ty = matrix.ty - dimensions.height / 2;
+
+				inversePendingMatrix = pendingMatrix.clone();
 				inversePendingMatrix.invert();
-		}
 
-		var rgb:Int, alpha:Float, r:Float, g:Float, b:Float, ratio:Float;
-
-		for (i in 0...colors.length)
-		{
-			rgb = colors[i];
-			alpha = alphas[i];
-			r = (rgb & 0xFF0000) >>> 16;
-			g = (rgb & 0x00FF00) >>> 8;
-			b = (rgb & 0x0000FF);
-
-			ratio = ratios[i] / 0xFF;
-			if (ratio < 0) ratio = 0;
-			if (ratio > 1) ratio = 1;
-
-			gradientFill.addColorStop(ratio, "rgba(" + r + ", " + g + ", " + b + ", " + alpha + ")");
+				var path:Path2D = cast new Path2D();
+				path.rect(0, 0, canvas.width, canvas.height);
+				path.closePath();
+				var gradientMatrix:DOMMatrix = new DOMMatrix([matrix.a, matrix.b, matrix.c, matrix.d, matrix.tx, matrix.ty]);
+				var inverseMatrix = cast gradientMatrix.inverse();
+				var untransformedPath:Path2D = cast new Path2D();
+				untransformedPath.addPath(path, inverseMatrix);
+				context2.fillStyle = gradientFill;
+				context2.setTransform(gradientMatrix);
+				context2.fill(untransformedPath);
+				return cast context.createPattern(canvas, 'no-repeat');
 		}
 
 		if (point != null) Point.__pool.release(point);
@@ -161,6 +247,33 @@ class CanvasGraphics
 
 		return cast(gradientFill);
 		#end
+	}
+
+	private static function getRGBA(color:UInt, alpha:Float):String
+	{
+		var r:UInt = (color & 0xFF0000) >>> 16;
+		var g:UInt = (color & 0x00FF00) >>> 8;
+		var b:UInt = (color & 0x0000FF);
+
+		return "rgba(" + r + ", " + g + ", " + b + ", " + alpha + ")";
+	}
+
+	private static function getDimensions(matrix:Matrix):Dynamic
+	{
+		var angle:Float = Math.atan2(matrix.c, matrix.a);
+		var cos:Float = Math.cos(angle);
+
+		var w:Float = (matrix.a / cos) * 1638.4;
+		var h:Float = (matrix.d / cos) * 1638.4;
+
+		if (w == 0 && h == 0)
+		{
+			w = h = 819.2;
+		}
+		return {
+			width: w,
+			height: h
+		};
 	}
 
 	private static function createTempPatternCanvas(bitmap:BitmapData, repeat:Bool, width:Int, height:Int):#if (js && html5) CanvasElement #else Void #end

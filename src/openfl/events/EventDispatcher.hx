@@ -41,12 +41,20 @@ package openfl.events;
 					  a listener registered for this event. For more
 					  information about broadcast events, see the DisplayObject
 					  class.
+
+	@see [Basics of handling events](https://books.openfl.org/openfl-developers-guide/handling-events/basics-of-handling-events.html)
+	@see [The event flow](https://books.openfl.org/openfl-developers-guide/handling-events/the-event-flow.html)
+	@see [Event objects](https://books.openfl.org/openfl-developers-guide/handling-events/event-objects.html)
+	@see [Event listeners](https://books.openfl.org/openfl-developers-guide/handling-events/event-listeners.html)
+	@see [Handling events for display objects](https://books.openfl.org/openfl-developers-guide/display-programming/working-with-display-objects/handling-events-for-display-objects.html)
 **/
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
+@:access(openfl.display.Stage)
 @:access(openfl.events.Event)
+@:access(openfl.events.UncaughtErrorEvents)
 class EventDispatcher implements IEventDispatcher
 {
 	@:noCompletion private var __eventMap:Map<String, Array<Listener>>;
@@ -167,7 +175,7 @@ class EventDispatcher implements IEventDispatcher
 								for a listener that is a nested inner function,
 								the function will be garbage-collected and no
 								longer persistent. If you create references to the
-								inner function(save it in another variable) then
+								inner function (save it in another variable) then
 								it is not garbage-collected and stays
 								persistent.
 
@@ -413,9 +421,37 @@ class EventDispatcher implements IEventDispatcher
 						list.splice(indexToRemove, 1);
 						iterator.remove(listener, indexToRemove);
 					}
+					else if (Lib.current != null && Lib.current.stage != null && Lib.current.stage.__uncaughtErrorEvents.__enabled)
+					{
+						try
+						{
+							weakCallback(event);
+						}
+						catch (e:Dynamic)
+						{
+							if (!(event is UncaughtErrorEvent))
+							{
+								Lib.current.stage.__handleError(e);
+							}
+						}
+					}
 					else
 					{
 						weakCallback(event);
+					}
+				}
+				else if (Lib.current != null && Lib.current.stage != null && Lib.current.stage.__uncaughtErrorEvents.__enabled)
+				{
+					try
+					{
+						listener.callback(event);
+					}
+					catch (e:Dynamic)
+					{
+						if (!(event is UncaughtErrorEvent))
+						{
+							Lib.current.stage.__handleError(e);
+						}
 					}
 				}
 				else
@@ -423,7 +459,24 @@ class EventDispatcher implements IEventDispatcher
 					listener.callback(event);
 				}
 				#else
-				listener.callback(event);
+				if (Lib.current != null && Lib.current.stage != null && Lib.current.stage.__uncaughtErrorEvents.__enabled)
+				{
+					try
+					{
+						listener.callback(event);
+					}
+					catch (e:Dynamic)
+					{
+						if (!(event is UncaughtErrorEvent))
+						{
+							Lib.current.stage.__handleError(e);
+						}
+					}
+				}
+				else
+				{
+					listener.callback(event);
+				}
 				#end
 
 				if (event.__isCanceledNow)
