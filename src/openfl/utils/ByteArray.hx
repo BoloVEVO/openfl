@@ -1154,6 +1154,8 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 	**/
 	@:noCompletion private var __allocated:Int;
 
+	@:noCompletion private var __amf3Reader:AMF3Reader;
+
 	/**
 		An alias for `length`, except guaranteed not to have side effects. This
 		matters in openfljs mode, where setting `length` calls`__resize()`, but
@@ -1164,8 +1166,6 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 	#else
 	@:noCompletion private var __length(get, set):Int;
 	#end
-
-	@:noCompletion private var __parentAMF3Reader:AMF3Reader;
 
 	#if openfljs
 	@:noCompletion private static function __init__()
@@ -1219,6 +1219,9 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 		super(length, bytes.getData());
 		#end
 
+		#if openfljs
+		__length = length;
+		#end
 		__allocated = length;
 
 		endian = defaultEndian;
@@ -1447,8 +1450,8 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 
 			case AMF3:
 				var input = new BytesInput(this, position);
-				var reader = new AMF3Reader(input, __parentAMF3Reader);
-				var data = AMF3Tools.unwrapValue(reader.read(), reader);
+				var reader = new AMF3Reader(input, __amf3Reader);
+				var data = AMF3Tools.decode(reader.read());
 				position = input.position;
 				return data;
 
@@ -1698,7 +1701,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 
 				if (#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end (object, ByteArrayData))
 				{
-					writer.write(ABytes(object));
+					writer.write(AByteArray(object));
 				}
 				else
 				{
@@ -2130,7 +2133,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 		@return A 64-bit signed integer between −9223372036854775808 to 9223372036854775807.
 		@throws EOFError There is not sufficient data available to read.
 	**/
-	public function readInt64():Int64
+	public inline function readInt64():Int64
 	{
 		if (position + 8 > length)
 		{
@@ -2359,7 +2362,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 		Writes a 64-bit signed integer to the byte stream.
 		@param value An integer to write to the byte stream.
 	**/
-	public function writeInt64(value:Int64):Void
+	public inline function writeInt64(value:Int64):Void
 	{
 		if (endian == LITTLE_ENDIAN)
 		{

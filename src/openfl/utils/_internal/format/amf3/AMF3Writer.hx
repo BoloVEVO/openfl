@@ -28,7 +28,9 @@
 package openfl.utils._internal.format.amf3;
 
 import openfl.utils._internal.format.amf3.AMF3Value;
+import openfl.Lib;
 
+@:access(openfl.Lib)
 class AMF3Writer
 {
 	var o:haxe.io.Output;
@@ -128,8 +130,43 @@ class AMF3Writer
 		#end
 	}
 
-	function writeObject(h:Map<String, AMF3Value>, ?size:Int)
+	function writeIntVector(v:Vector<Int>)
 	{
+		writeUInt(v.length, true);
+		o.writeByte(v.fixed ? 1 : 0);
+
+		for (r in 0...v.length)
+		{
+			o.writeInt32(v[r]);
+		}
+	}
+
+	function writeFloatVector(v:Vector<Float>)
+	{
+		writeUInt(v.length, true);
+		o.writeByte(v.fixed ? 1 : 0);
+
+		for (r in 0...v.length)
+		{
+			o.writeDouble(v[r]);
+		}
+	}
+
+	function writeObjectVector(v:Vector<AMF3Value>, ?type:String)
+	{
+		writeUInt(v.length, true);
+		o.writeByte(v.fixed ? 1 : 0);
+		o.writeString(type);
+
+		for (r in 0...v.length)
+		{
+			write(v[r]);
+		}
+	}
+
+	function writeObject(h:Map<String, AMF3Value>, ?size:Int, ?className:String)
+	{
+		// TODO: Support writing className
 		if (size == null) o.writeByte(0x0b);
 		else
 			writeUInt(size << 4 | 0x03);
@@ -154,6 +191,31 @@ class AMF3Writer
 			for (i in 0...k.length)
 				write(h.get(k[i]));
 		}
+	}
+
+	public function writeExternal(external:IExternalizable)
+	{
+		var isExternal = true;
+		var isDynamic = false;
+		var traitsCount = 0;
+		writeUInt(3 | (isExternal ? 4 : 0) | (isDynamic ? 8 : 0) | (traitsCount << 4));
+		var cls = Type.getClass(external);
+		var className = null;
+		if (Lib.__registeredClasses.exists(cls))
+		{
+			className = Lib.__registeredClasses[cls];
+		}
+		// TODO: Write as anonymous object if not registered as alias
+		if (className == null)
+		{
+			className = Type.getClassName(cls);
+		}
+		writeString(className);
+		// TODO: Write directly to output stream
+		var ba = new ByteArray();
+		ba.endian = BIG_ENDIAN;
+		external.writeExternal(ba);
+		o.writeBytes(ba, 0, ba.length);
 	}
 
 	public function write(v:AMF3Value)
@@ -193,14 +255,25 @@ class AMF3Writer
 				o.writeByte(0x01); // end of assoc array values
 				for (f in a)
 					write(f);
-			// case AVector(v):  // TODO add vector writing support
-			case AObject(h, n):
+			case AIntVector(v):
+				o.writeByte(0x0d); // TODO: Support UIntVector as well?
+				writeIntVector(v);
+			case AFloatVector(v):
+				o.writeByte(0x0f);
+				writeFloatVector(v);
+			case AObjectVector(v):
+				o.writeByte(0x10);
+				writeObjectVector(v);
+			case AObject(h, n, className):
 				o.writeByte(0x0a);
-				writeObject(h, n);
+				writeObject(h, n, className);
+			case AExternal(e):
+				o.writeByte(0x0a);
+				writeExternal(e);
 			case AXml(x):
 				o.writeByte(0x0b);
 				writeString(x.toString());
-			case ABytes(b):
+			case AByteArray(b):
 				o.writeByte(0x0c);
 				writeUInt(b.length, true);
 				o.write(b);
