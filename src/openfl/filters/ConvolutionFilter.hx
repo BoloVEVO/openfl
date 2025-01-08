@@ -14,6 +14,7 @@ import openfl.display.Shader;
 	objects that inherit from the DisplayObject class), such as MovieClip,
 	SimpleButton, TextField, and Video objects, as well as to BitmapData
 	objects.
+
 	To create a convolution filter, use the syntax `new ConvolutionFilter()`.
 	The use of filters depends on the object to which you apply the filter:
 

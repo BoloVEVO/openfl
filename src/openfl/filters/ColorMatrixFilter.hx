@@ -20,6 +20,7 @@ import lime.math.RGBA;
 	that inherit from the DisplayObject class), such as MovieClip,
 	SimpleButton, TextField, and Video objects, as well as to BitmapData
 	objects.
+
 	**Note:** For RGBA values, the most significant byte represents the red
 	channel value, followed by green, blue, and then alpha.
 
