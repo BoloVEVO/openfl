@@ -49,6 +49,9 @@ import openfl.display.Shader;
 	To allow the shader output to extend beyond the bounds of the filtered
 	object, use the `leftExtension`, `rightExtension`, `topExtension`, and
 	`bottomExtension` properties.
+
+	@see `openfl.display.DisplayObject.filters`
+	@see `openfl.display.BitmapData.applyFilter`
 **/
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')

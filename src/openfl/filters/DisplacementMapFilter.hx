@@ -54,6 +54,9 @@ import lime.math.Vector4;
 	`scaleX` and `scaleY` properties are set to a value other than 1.0), the
 	filter effect is not scaled. It is scaled only when the user zooms in on
 	the Stage.
+
+	@see `openfl.display.DisplayObject.filters`
+	@see `openfl.display.BitmapData.applyFilter`
 **/
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')

@@ -54,6 +54,9 @@ import lime._internal.graphics.ImageDataUtil; // TODO
 	example, if you zoom in on a large movie clip with a filter applied, the
 	filter is turned off if the resulting image exceeds the maximum
 	dimensions.
+
+	@see `openfl.display.DisplayObject.filters`
+	@see `openfl.display.BitmapData.applyFilter`
 **/
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
