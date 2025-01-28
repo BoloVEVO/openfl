@@ -2055,11 +2055,13 @@ class TextField extends InteractiveObject
 
 		if (position <= __caretIndex)
 		{
-			while (delimiters.indexOf(char) == -1 && position > 0)
+			if (position == 0) return position;
+			do
 			{
 				position--;
 				char = __text.charAt(position);
 			}
+			while (delimiters.indexOf(char) == -1 && position > 0);
 			if (position == 0) return position;
 			position++;
 		}
