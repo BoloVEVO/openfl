@@ -2022,7 +2022,7 @@ class TextField extends InteractiveObject
 	@:noCompletion private function __getPositionByIdentifier(x:Float, y:Float, line:Bool):Int
 	{
 		var position = __getPosition(x, y);
-		var delimiters = if (line) "\n" else " .,;:!?()[]{}<>/\\|-=+*&^%$#@~`'\"";
+		var delimiters = if (line) "\n" else " .,;:!?()[]{}<>/\\|-=+*&^%$#@~`'\"\n";
 		var char = __text.charAt(position);
 		if (__specialSelectionInitialIndex <= position)
 		{
@@ -2050,7 +2050,7 @@ class TextField extends InteractiveObject
 	@:noCompletion private function __getOppositeIdentifierBound(charIndex:Int, line:Bool):Int
 	{
 		var position = charIndex;
-		var delimiters = if (line) "\n" else " .,;:!?()[]{}<>/\\|-=+*&^%$#@~`'\"";
+		var delimiters = if (line) "\n" else " .,;:!?()[]{}<>/\\|-=+*&^%$#@~`'\"\n";
 		var char = __text.charAt(position);
 
 		if (position <= __caretIndex)
