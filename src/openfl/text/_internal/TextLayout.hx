@@ -154,13 +154,13 @@ class TextLayout
 			__hbBuffer.script = script.toHBScript();
 			__hbBuffer.language = new HBLanguage(language);
 			__hbBuffer.clusterLevel = HBBufferClusterLevel.CHARACTERS;
-			#if (neko)
+			#if (neko || cppia)
 			// other targets still uses dummy positions to make UTF8 work
 			// TODO: confirm
 			__hbBuffer.addUTF8(text, 0, -1);
 			#elseif (hl)
 			__hbBuffer.addUTF16(text, text.length, 0, -1);
-			#else
+			#elseif (cpp)
 			__hbBuffer.addUTF16(untyped __cpp__('(uintptr_t){0}', text.wc_str()), text.length, 0, -1);
 			#end
 

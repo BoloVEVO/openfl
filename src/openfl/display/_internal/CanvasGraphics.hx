@@ -452,6 +452,17 @@ class CanvasGraphics
 						strokeCommands.lineBitmapStyle(c.bitmap, c.matrix, c.repeat, c.smooth);
 
 					case LINE_STYLE:
+						endStroke();
+
+						if (hasStroke && (context : Dynamic).isPointInStroke(x, y))
+						{
+							data.destroy();
+							graphics.__canvas = cacheCanvas;
+							graphics.__context = cacheContext;
+							CanvasGraphics.graphics = null;
+							return true;
+						}
+
 						var c = data.readLineStyle();
 						strokeCommands.lineStyle(c.thickness, c.color, 1, c.pixelHinting, c.scaleMode, c.caps, c.joints, c.miterLimit);
 
@@ -928,7 +939,17 @@ class CanvasGraphics
 					if (shaderBuffer.inputCount > 0)
 					{
 						bitmapFill = shaderBuffer.inputs[0];
-						context.fillStyle = createBitmapFill(bitmapFill, shaderBuffer.inputWrap[0] != CLAMP, shaderBuffer.inputFilter[0] != NEAREST);
+						if (bitmapFill.readable)
+						{
+							context.fillStyle = createBitmapFill(bitmapFill, shaderBuffer.inputWrap[0] != CLAMP, shaderBuffer.inputFilter[0] != NEAREST);
+						}
+						else
+						{
+							// if it's hardware-only BitmapData, fall back to
+							// drawing solid black because we have no software
+							// pixels to work with
+							context.fillStyle = "#" + StringTools.hex(0, 6);
+						}
 						hasFill = true;
 
 						pendingMatrix = null;

@@ -285,6 +285,15 @@ class CairoGraphics
 						strokeCommands.moveTo(c.x, c.y);
 
 					case LINE_STYLE:
+						endStroke();
+
+						if (hasStroke && cairo.inStroke(x, y))
+						{
+							data.destroy();
+							CairoGraphics.graphics = null;
+							return true;
+						}
+
 						var c = data.readLineStyle();
 						strokeCommands.lineStyle(c.thickness, c.color, 1, c.pixelHinting, c.scaleMode, c.caps, c.joints, c.miterLimit);
 
@@ -772,10 +781,21 @@ class CairoGraphics
 
 					if (shaderBuffer.inputCount > 0)
 					{
-						fillPattern = createImagePattern(shaderBuffer.inputs[0], null, shaderBuffer.inputWrap[0] != CLAMP,
-							shaderBuffer.inputFilter[0] != NEAREST);
+						var bitmap = shaderBuffer.inputs[0];
+						if (bitmap.readable)
+						{
+							fillPattern = createImagePattern(bitmap, null, shaderBuffer.inputWrap[0] != CLAMP,
+								shaderBuffer.inputFilter[0] != NEAREST);
+						}
+						else
+						{
+							// if it's hardware-only BitmapData, fall back to
+							// drawing solid black because we have no software
+							// pixels to work with
+							fillPattern = CairoPattern.createRGB(0, 0, 0);
+						}
 
-						bitmapFill = shaderBuffer.inputs[0];
+						bitmapFill = bitmap;
 						bitmapRepeat = false;
 
 						hasFill = true;
